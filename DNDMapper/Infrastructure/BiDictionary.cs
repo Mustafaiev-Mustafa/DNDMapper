@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace DNDMapper
+namespace DNDMapper.Infrastructure
 {
     public class BiDictionary<T1, T2> : IEnumerable<(T1, T2)>
     {

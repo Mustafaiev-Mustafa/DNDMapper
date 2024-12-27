@@ -2,20 +2,23 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using static DNDMapper.MainWindow;
+using DNDMapper.Core;
+using DNDMapper.Core.Enums;
+using DNDMapper.Infrastructure;
 
-namespace DNDMapper
+namespace DNDMapper.Helpers
 {
-    public static class HexHelper
+    public static class HexDrawer
     {
-        public static void DrawHexMap(Canvas hexCanvas, MapInfoModel model, BiDictionary<HexCell, Polygon> polygonCache, double radius)
+        private static readonly int _hexRadius = 8;
+        public static BiDictionary<HexCell, Polygon> DrawHexMap(Canvas hexCanvas, MapInfo infoModel)
         {
-            double hexWidth = 2 * radius;
-            double hexHeight = Math.Sqrt(3) * radius;
-            double xOffset = radius * 3 / 2;
+            double hexWidth = 2 * _hexRadius;
+            double hexHeight = Math.Sqrt(3) * _hexRadius;
+            double xOffset = _hexRadius * 3 / 2;
             double yOffset = hexHeight;
-
-            foreach (var cell in model.Cells)
+            BiDictionary<HexCell,Polygon> result = new BiDictionary<HexCell,Polygon>();
+            foreach (var cell in infoModel.Cells)
             {
                 double x = cell.Col * xOffset;
                 double y = cell.Row * yOffset;
@@ -25,34 +28,18 @@ namespace DNDMapper
                     y += hexHeight / 2;
                 }
 
-                Polygon hex = CreateHexagon(cell, radius);
+                Polygon hex = CreateHexagon(cell, _hexRadius);
 
                 Canvas.SetLeft(hex, x);
                 Canvas.SetTop(hex, y);
-                polygonCache.Add(cell,hex);
                 hexCanvas.Children.Add(hex);
+                result.Add(cell, hex);
             }
-        }
-        public static void UpdateHexColors(BiDictionary<HexCell, Polygon> cellToPolygonMap, MapInfoModel model)
-        {
-            foreach (var keyValue in cellToPolygonMap)
-            {
-                keyValue.Item2.Fill = keyValue.Item1.Color switch
-                {
-                    "Green" => Brushes.Green,
-                    "Brown" => Brushes.Brown,
-                    _ => Brushes.LightBlue
-                };
-            }
+            return result;
         }
         private static Polygon CreateHexagon(HexCell cell, double radius)
         {
-            Brush fill = cell.Color switch
-            {
-                "Green" => Brushes.Green,
-                "Brown" => Brushes.Brown,
-                _ => Brushes.LightBlue
-            };
+            Brush fill = DndColorConverter.GetSolidColor(cell.Color);
 
             Polygon hex = new Polygon
             {
@@ -78,7 +65,7 @@ namespace DNDMapper
             {
                 if (sender is Polygon hex && hex.Stroke != Brushes.Yellow)
                 {
-                    BringToFront(hex);
+                    Panel.SetZIndex(hex, int.MaxValue);
                     hex.Stroke = Brushes.Yellow;
                     hex.StrokeThickness = 3;
                 }
@@ -95,28 +82,6 @@ namespace DNDMapper
             };
 
             return hex;
-        }
-        private static void BringToFront(UIElement element)
-        {
-            Panel.SetZIndex(element, int.MaxValue);
-        }
-        public static void ChangeHexColor(Polygon hex, HexCell cell)
-        {
-            if (cell.Color == "Blue")
-            {
-                cell.Color = "Green";
-                hex.Fill = Brushes.Green;
-            }
-            else if (cell.Color == "Green")
-            {
-                cell.Color = "Brown";
-                hex.Fill = Brushes.Brown;
-            }
-            else
-            {
-                cell.Color = "Blue";
-                hex.Fill = Brushes.LightBlue;
-            }
         }
     }
 }

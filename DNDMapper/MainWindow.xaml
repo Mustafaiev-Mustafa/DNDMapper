@@ -15,11 +15,15 @@
         <Canvas Name="HexCanvas" Background="LightGray" Grid.Column="0" Grid.Row="0"/>
         <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" Background="Black">
             <TextBlock FontSize="18" FontWeight="Bold" Text="Instruments" Margin="0,0,0,0" Foreground="White"/>
+            <ComboBox Name="LayerSelector" SelectionChanged="OnLayerSelectionChanged" Width="150">
+                
+            </ComboBox>
             <Button Content="Create map" Height="40" Click="OnCreateMapClick" />
             <Button Content="Save map" Height="40" Click="OnSaveMapClick" />
             <Button Content="Save map as" Height="40" Click="OnSaveMapClick" />
             <Button Content="Open map" Height="40" Click="OnOpenMapClick" />
-            <Button Content="Generate Continents" Height="40" VerticalAlignment="Top" Click="OnGenerateContinentsClick" Grid.Column="1"/>
+            <Button Content="Generate Continents" Height="40" Click="OnGenerateContinentsClick" Grid.Column="1"/>
+            <Button Content="Create region" Height="40" Click="OnStartRegionSelectionClick" />
         </StackPanel>
         <TextBox Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Foreground="White" FontSize="14"
                  Text="Here is the text" IsReadOnly="True" />
